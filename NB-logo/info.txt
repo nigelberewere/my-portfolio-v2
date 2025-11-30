@@ -1,0 +1,11 @@
+
+Hope you enjoy your new logo, here are the people that
+made your beautiful logo happen :)
+font name: Modak-Regular
+font link: https://fonts.google.com/specimen/Modak
+font author: Ek Type
+font author site: https://ektype.in/
+
+
+{"bg":"#A26135","icon":"#ECECEA","font":"#ECECEA","slogan":"#fffffe"}
+      
