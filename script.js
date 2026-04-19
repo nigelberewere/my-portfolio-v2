@@ -1,5 +1,9 @@
-// Initialize Icons
-lucide.createIcons();
+// Initialize Icons after DOM is ready
+function initIcons() {
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
 
 // Intersection Observer for Animations
 const observerOptions = {
@@ -58,44 +62,45 @@ function typeWriter() {
     }
 }
 
-// Start typing after initial animations
-setTimeout(typeWriter, 1000);
+// Start typing after initial animations - reduced delay for faster perceived load
+setTimeout(typeWriter, 500); // Reduced from 1000ms
 
 // Lottie Animation Control: Play once, then yoyo loop last 3s
-const lottiePlayer = document.getElementById('hello-world-lottie');
-
-function setupLottie(lottie) {
-    const totalFrames = lottie.totalFrames;
-    const frameRate = lottie.frameRate;
-    // Calculate frames for 3 seconds
-    const loopDurationFrames = frameRate * 3; 
-    const startLoopFrame = totalFrames - loopDurationFrames;
+function initLottie() {
+    const lottiePlayer = document.getElementById('hello-world-lottie');
     
-    let isLooping = false;
-    let nextDirection = 'forward'; // After the first reverse, we go forward
+    if (!lottiePlayer) return;
 
-    // Listen to the lottie instance directly for precise segment control
-    lottie.addEventListener('complete', () => {
-        if (!isLooping) {
-            isLooping = true;
-            // Initial run finished. We are at the end.
-            // Start the yoyo by reversing from End to Start of loop.
-            lottie.playSegments([totalFrames, startLoopFrame], true);
-        } else {
-            // A loop segment finished. Toggle direction.
-            if (nextDirection === 'forward') {
-                lottie.playSegments([startLoopFrame, totalFrames], true);
-                nextDirection = 'backward';
-            } else {
+    function setupLottie(lottie) {
+        const totalFrames = lottie.totalFrames;
+        const frameRate = lottie.frameRate;
+        // Calculate frames for 3 seconds
+        const loopDurationFrames = frameRate * 3; 
+        const startLoopFrame = totalFrames - loopDurationFrames;
+        
+        let isLooping = false;
+        let nextDirection = 'forward'; // After the first reverse, we go forward
+
+        // Listen to the lottie instance directly for precise segment control
+        lottie.addEventListener('complete', () => {
+            if (!isLooping) {
+                isLooping = true;
+                // Initial run finished. We are at the end.
+                // Start the yoyo by reversing from End to Start of loop.
                 lottie.playSegments([totalFrames, startLoopFrame], true);
-                nextDirection = 'forward';
+            } else {
+                // A loop segment finished. Toggle direction.
+                if (nextDirection === 'forward') {
+                    lottie.playSegments([startLoopFrame, totalFrames], true);
+                    nextDirection = 'backward';
+                } else {
+                    lottie.playSegments([totalFrames, startLoopFrame], true);
+                    nextDirection = 'forward';
+                }
             }
-        }
-    });
-}
+        });
+    }
 
-if (lottiePlayer) {
-    // Check if lottie is already loaded
     if (lottiePlayer.getLottie && lottiePlayer.getLottie()) {
         setupLottie(lottiePlayer.getLottie());
     } else {
@@ -106,16 +111,18 @@ if (lottiePlayer) {
 }
 
 // Particles.js Configuration - "Digital Dust" Spotlight Effect
-if (document.getElementById("particles-js")) {
-    particlesJS("particles-js", {
-        "particles": {
-            "number": {
-                "value": 160,
-                "density": {
-                    "enable": true,
-                    "value_area": 800
-                }
-            },
+// Initialize particles after page load for better performance
+function initParticles() {
+    if (document.getElementById("particles-js")) {
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 80, // Reduced from 160 for better performance
+                    "density": {
+                        "enable": true,
+                        "value_area": 1000
+                    }
+                },
             "color": {
                 "value": ["#ffffff", "#10b981", "#A26135"] 
             },
@@ -137,7 +144,7 @@ if (document.getElementById("particles-js")) {
                 }
             },
             "size": {
-                "value": 4,
+                "value": 3, // Reduced from 4
                 "random": true,
                 "anim": {
                     "enable": true,
@@ -205,4 +212,18 @@ if (document.getElementById("particles-js")) {
         },
         "retina_detect": true
     });
+    }
+}
+
+// Initialize particles after a short delay for better perceived performance
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        initIcons();
+        initLottie();
+        setTimeout(initParticles, 100);
+    });
+} else {
+    initIcons();
+    initLottie();
+    setTimeout(initParticles, 100);
 }
